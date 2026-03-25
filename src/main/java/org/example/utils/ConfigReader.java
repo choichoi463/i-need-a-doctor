@@ -40,4 +40,12 @@ public class ConfigReader {
     public static String getChromeLocalPath() {
         return props.getProperty("browser.chrome.path");
     }
+
+    public static String getGmailAppPassword() {
+        return props.getProperty("gmail.app.password");
+    }
+
+    public static String getGmailAppMail() {
+        return props.getProperty("gmail.app.mail");
+    }
 }

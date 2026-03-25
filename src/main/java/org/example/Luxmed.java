@@ -2,9 +2,13 @@ package org.example;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.*;
+import jakarta.mail.Folder;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Store;
 import lombok.extern.java.Log;
 import org.example.browser.BrowserProvider;
 import org.example.utils.ConfigReader;
+import org.example.utils.MailReader;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
@@ -25,6 +29,18 @@ public class Luxmed {
             page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wpisz login")).press("Tab");
             page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wpisz hasło")).fill(ConfigReader.getLuxmedPassword());
             page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Zaloguj się")).click();
+
+            //verification code via email
+            MailReader mailReader = new MailReader();
+            try {
+                Store store = mailReader.establishConnection();
+                log.info("If it works here you will see the amount of emails " + store.getFolder("Inbox").getMessageCount());
+//                mailReader.readEmails(store);
+                mailReader.searchEmails(store, "noreply@info.luxmed.pl");
+                mailReader.searchEmails(store, "noreply@info.luxmed.pl");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
             //part with selecting new visit to endokrinolog
             page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Umów")).click();
