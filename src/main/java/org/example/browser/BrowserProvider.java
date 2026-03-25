@@ -9,6 +9,7 @@ import org.example.utils.ConfigReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Log
 public class BrowserProvider implements AutoCloseable {
@@ -25,8 +26,8 @@ public class BrowserProvider implements AutoCloseable {
             playwright = Playwright.create();
 
             BrowserType.LaunchOptions options = new BrowserType.LaunchOptions()
-
                     .setHeadless(false)
+                    .setArgs(List.of("--disable-blink-features=AutomationControlled")) // resolves this browser is not secure
                     .setSlowMo(50)
                     .setDownloadsPath(Paths.get("playwright\\downloads"));
 
