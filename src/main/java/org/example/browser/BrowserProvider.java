@@ -33,9 +33,7 @@ public class BrowserProvider implements AutoCloseable {
             if (ConfigReader.getIsBehindTheProxy()) {
                 System.setProperty("PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD", "1");
                 options.setExecutablePath(Paths.get(ConfigReader.getChromeLocalPath()));
-                options.setExecutablePath(Paths.get("src\\main\\resources\\browser\\chrome-win2\\chrome.exe"));
             }
-
 
             Path downloadsDir = Paths.get("playwright", "downloads");
             Files.createDirectories(downloadsDir);

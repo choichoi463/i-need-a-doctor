@@ -1,8 +1,12 @@
 package org.example.utils;
 
+import lombok.extern.java.Log;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.FileInputStream;
 import java.util.Properties;
 
+@Log
 public class ConfigReader {
 
     private static Properties props = new Properties();
@@ -24,7 +28,13 @@ public class ConfigReader {
     }
 
     public static boolean getIsBehindTheProxy() {
-        return Boolean.getBoolean(props.getProperty("is.proxy"));
+        boolean isProxy;
+        if (StringUtils.equals(props.getProperty("is.proxy"),"true")) {
+            log.info("Proxy setup is used.");
+            isProxy = true;
+        }
+        else isProxy = false;
+        return isProxy;
     }
 
     public static String getChromeLocalPath() {
