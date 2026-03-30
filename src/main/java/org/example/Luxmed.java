@@ -2,15 +2,13 @@ package org.example;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.*;
-import jakarta.mail.Folder;
+import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Store;
 import lombok.extern.java.Log;
 import org.example.browser.BrowserProvider;
 import org.example.utils.ConfigReader;
 import org.example.utils.MailReader;
-
-import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 @Log
 public class Luxmed {
@@ -31,22 +29,42 @@ public class Luxmed {
             page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Zaloguj się")).click();
 
             //verification code via email
+            //check initial message amount
             MailReader mailReader = new MailReader();
+            Store store = null;
             try {
-                Store store = mailReader.establishConnection();
+                store = mailReader.establishConnection();
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+            int initialMessageCount = mailReader.getMessageAmount(store);
+
+            //ui verification
+            page.getByText("Kontynuuj bez dodawania").click();
+            page.getByText("Dalej").click();
+
+            //wait till mail is received
+            mailReader.waitTillNewMailReceived(store, initialMessageCount);
+            //code mail extraction
+            String code;
+            try {
                 log.info("If it works here you will see the amount of emails " + store.getFolder("Inbox").getMessageCount());
-//                mailReader.readEmails(store);
-                mailReader.searchEmails(store, "noreply@info.luxmed.pl");
-                mailReader.searchEmails(store, "noreply@info.luxmed.pl");
+                Message messageWithCode = mailReader.findLastMessage(store, "noreply@info.luxmed.pl");
+                code = mailReader.parseEmailGetCode(messageWithCode);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
+            page.locator("#mfaEmailCodeInput").type(code);
+            page.getByText("Potwierdź").last().click();
+
             //part with selecting new visit to endokrinolog
+            final String VISIT_TYPE_SEARCH_PARAM = "Konsultacja endokrynologiczna";
+            final String VISIT_SHORT_NAME = "endo";
             page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Umów")).click();
-            page.locator("input[name=\"fake-attribute-2026-03-04T17:34:29.514Z-0.9195727907460862\"]").click();
-            page.locator("input[name=\"fake-attribute-2026-03-04T17:34:29.514Z-0.9195727907460862\"]").fill("endo");
-            page.getByText("Konsultacja endokrynologiczna", new Page.GetByTextOptions().setExact(true)).click();
+            page.locator("input[name^='fake-attribute']").filter().all().get(1).click();
+            page.locator("input[name^='fake-attribute']").filter().all().get(1).fill(VISIT_SHORT_NAME);
+            page.getByText(VISIT_TYPE_SEARCH_PARAM, new Page.GetByTextOptions().setExact(true)).first().click();
 
             //part with yes/no options if visible
             page.locator("label:nth-child(2) > .checkbox > .form-check-presentation").click();
@@ -59,10 +77,11 @@ public class Luxmed {
             page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Dalej")).click();
 
             //part with doctor name
-            page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).click();
-            page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).fill("ilo");
-            page.getByText("Ilona Minkiewicz").click();
-            page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click();
+            final String DOCTOR_NAME = "Ilona Minkiewicz";
+            final String DOCTOR_SHORT_INDICATOR = "ilo";
+            page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wybrano 1 z 5")).click();
+            page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wybrano 1 z 5")).fill(DOCTOR_NAME);
+//            page.getByText("Ilona Minkiewicz").first().click();
             page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click();
 
             //here TODO add logic to register for any visit, can be doen by other visits ui.
