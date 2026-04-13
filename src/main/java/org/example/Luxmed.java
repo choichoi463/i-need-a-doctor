@@ -13,14 +13,18 @@ import org.example.utils.MailReader;
 
 import java.time.Duration;
 
+import static org.example.utils.ConfigReader.*;
+
 @Log
 public class Luxmed {
+
+    static boolean isRegistrationDone = false;
+
     public static void main(String[] args) {
 
         //setting up retry mechanism
-        boolean isRegistrationDone = false;
-        int MAX_RETRY_COUNT = 5000; //250h of total time run.
-        int RETRY_INTERVAL_MINUTES = 3;
+        int MAX_RETRY_COUNT = getMaxRetryNumber(); //250h of total time run.
+        int RETRY_INTERVAL_MINUTES = getRetryIntervalMinutes();
         for (int i = 0; i <= MAX_RETRY_COUNT; i++) {
             log.info("Starting execution #" + i);
             if (isRegistrationDone) {
@@ -77,7 +81,7 @@ public class Luxmed {
                 mailReader.waitTillNewMailReceived(store, initialMessageCount);
             } catch (Exception e) {
                 log.warning("Warning! no emails were received for 3 minutes. Initiating a longer sleep timeout");
-                int RETRY_INTERVAL_NO_MAIL_MINUTES = 15;
+                int RETRY_INTERVAL_NO_MAIL_MINUTES = getNoEmailSleepInterval();
                 try {
                     Thread.sleep(Duration.ofMinutes(RETRY_INTERVAL_NO_MAIL_MINUTES));
                     mailReader.waitTillNewMailReceived(store, initialMessageCount);
@@ -174,6 +178,7 @@ public class Luxmed {
                 //confirm reservation modal
                 page.getByText("Potwierdź rezerwację").click();
                 log.info("Congratulation, the visit was confirmed!");
+                isRegistrationDone = true;
                 //TODO send message ro something.
             }
 
@@ -181,6 +186,8 @@ public class Luxmed {
             context.close();
         } catch (Exception e) {
             log.warning("Loop failed.");
+            log.warning("Exception message: " + e.getMessage());
+            log.warning("Exception trace: " + e.getStackTrace());
         }
     }
 }

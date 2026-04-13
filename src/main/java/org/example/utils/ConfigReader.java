@@ -48,4 +48,14 @@ public class ConfigReader {
     public static String getGmailAppMail() {
         return props.getProperty("gmail.app.mail");
     }
+
+    public static Integer getMaxRetryNumber() {
+        return Integer.valueOf(props.getProperty("loop.retry.max"));
+    }
+    public static Integer getRetryIntervalMinutes() {
+        return Integer.valueOf(props.getProperty("loop.retry.interval.minutes"));
+    }
+    public static Integer getNoEmailSleepInterval() {
+        return Integer.valueOf(props.getProperty("noemail.sleep.interval"));
+    }
 }
