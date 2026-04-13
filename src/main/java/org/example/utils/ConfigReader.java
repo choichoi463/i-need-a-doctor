@@ -58,4 +58,13 @@ public class ConfigReader {
     public static Integer getNoEmailSleepInterval() {
         return Integer.valueOf(props.getProperty("noemail.sleep.interval"));
     }
+    public static boolean getIsBrowserHeadless() {
+        boolean isHeadless;
+        if (StringUtils.equals(props.getProperty("browser.headless"),"true")) {
+            log.info("Browser is headless.");
+            isHeadless = true;
+        }
+        else isHeadless = false;
+        return isHeadless;
+    }
 }
