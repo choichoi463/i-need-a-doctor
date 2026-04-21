@@ -57,6 +57,13 @@
             <version>2.0.2</version>
         </dependency>
 
+        <!-- telegram messaging -->
+        <dependency>
+            <groupId>com.github.pengrad</groupId>
+            <artifactId>java-telegram-bot-api</artifactId>
+            <version>6.1.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
