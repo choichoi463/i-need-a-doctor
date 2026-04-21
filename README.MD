@@ -18,6 +18,7 @@ https://www.baeldung.com/java-access-gmail-imap
 To connect to the Gmail server, we need to create an app password. Let’s navigate to the Google Account settings page and select the security option at the sidebar. Then, let’s enable 2-Factor Authentication (2FA) if not already active.
 app password can be created here https://myaccount.google.com/apppasswords
 
+To receive a message in telegram - you should update the token in Telegram.java
 
 Logic steps:
 - `10` open url
@@ -26,7 +27,7 @@ Logic steps:
 - select a doctor (name, category)
 - find results
 - register for the upcoming date - last slot from page 1.
-- send telegram message *TODO*
+- send telegram message
 - end loop
 
 Conditions for steps above:

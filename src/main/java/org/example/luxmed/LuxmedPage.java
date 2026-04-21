@@ -12,6 +12,7 @@ import org.example.browser.BrowserUtils;
 import org.example.utils.ConfigReader;
 import lombok.extern.java.Log;
 import org.example.utils.MailReader;
+import org.example.utils.Telegram;
 
 import java.time.Duration;
 import java.util.List;
@@ -251,6 +252,8 @@ public class LuxmedPage {
             isRegistrationDone = true;
             //TODO send message ro something.
             browserUtils.makeScreenshot("RESERVATION_TIME_SUCCESS_");
+            Telegram telegram = new Telegram();
+            telegram.sendMessage("Reservation was done successfully, please check your mailbox for a confirmation.");
         }
         return isRegistrationDone;
     }
