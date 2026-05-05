@@ -104,7 +104,22 @@ public class LuxmedPage {
     }
 
     public void optionalAnketaQuestion() {
-        //TODO if present
+        page.waitForLoadState();
+
+        try {
+            Locator pominStomatologiaButton = page.getByText("Pomiń");
+            if (pominStomatologiaButton.isVisible()) {
+                log.info("Pomin stomatologia button is visible");
+                pominStomatologiaButton.click();
+            }
+        }
+        catch (Exception e) {
+            log.severe("Optional Stomatologia question part failed.");
+            browserUtils.makeScreenshot("optional_pomin_stomatologia_failed_");
+            throw new RuntimeException(e);
+        }
+
+            //TODO if present
         try {
             Locator anketa = page.locator("iframe[title=\"Zaproszenie do ankiety\"]").contentFrame().getByRole(AriaRole.BUTTON, new FrameLocator.GetByRoleOptions().setName("Przypomnij mi później"));
             if (anketa.isVisible()) {
