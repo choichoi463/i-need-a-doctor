@@ -8,6 +8,7 @@ import com.microsoft.playwright.options.AriaRole;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Store;
+import lombok.SneakyThrows;
 import org.example.browser.BrowserUtils;
 import org.example.utils.ConfigReader;
 import lombok.extern.java.Log;
@@ -103,8 +104,10 @@ public class LuxmedPage {
         page.getByText("Potwierdź").last().click();
     }
 
+    @SneakyThrows
     public void optionalAnketaQuestion() {
         page.waitForLoadState();
+        Thread.sleep(5000);
 
         try {
             Locator pominStomatologiaButton = page.getByText("Pomiń");
