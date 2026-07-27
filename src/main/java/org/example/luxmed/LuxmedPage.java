@@ -1,6 +1,5 @@
 package org.example.luxmed;
 
-import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
@@ -10,6 +9,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.Store;
 import lombok.SneakyThrows;
 import org.example.browser.BrowserUtils;
+import org.example.doctor.DoctorType;
 import org.example.utils.ConfigReader;
 import lombok.extern.java.Log;
 import org.example.utils.MailReader;
@@ -18,6 +18,7 @@ import org.example.utils.Telegram;
 import java.time.Duration;
 import java.util.List;
 
+import static com.microsoft.playwright.options.LoadState.NETWORKIDLE;
 import static org.example.utils.ConfigReader.getNoEmailSleepInterval;
 
 @Log
@@ -136,22 +137,20 @@ public class LuxmedPage {
         }
     }
 
-    private void selectingNewVisitEndokrinologLogic() {
-        log.info("choosing a visit type");
-        final String VISIT_TYPE_SEARCH_PARAM = "Konsultacja endokrynologiczna";
-        final String VISIT_SHORT_NAME = "endo";
+    private void selectingNewVisitLogic(DoctorType doctorType) {
+        log.info("choosing a visit type: " + doctorType.getDisplayName());
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Umów")).click();
         page.locator("input[name^='fake-attribute']").filter().all().get(1).click();
-        page.locator("input[name^='fake-attribute']").filter().all().get(1).fill(VISIT_SHORT_NAME);
-        page.getByText(VISIT_TYPE_SEARCH_PARAM, new Page.GetByTextOptions().setExact(true)).first().click();
+        page.locator("input[name^='fake-attribute']").filter().all().get(1).fill(doctorType.getVisitShortCode());
+        page.getByText(doctorType.getVisitTypeSearchParam(), new Page.GetByTextOptions().setExact(true)).first().click();
     }
 
-    public void selectingNewVisitEndokrinolog() {
+    public void selectingNewVisit(DoctorType doctorType) {
         try {
-            selectingNewVisitEndokrinologLogic();
+            selectingNewVisitLogic(doctorType);
         } catch (Exception e) {
-            log.severe("Selecting Endokrinolog Questions has failed");
-            browserUtils.makeScreenshot("endokrinolog_questions_failed_");
+            log.severe("Selecting a visit type has failed");
+            browserUtils.makeScreenshot("visit_type_selection_failed_");
             throw new RuntimeException(e);
         }
     }
@@ -166,8 +165,9 @@ public class LuxmedPage {
 //        }
     }
 
-    private void partWithYesNoQuestionsForEndoLogic() throws InterruptedException {
+    private void partWithYesNoQuestionsLogicEndokrynolog() throws InterruptedException {
         //part with yes/no options if visible
+        log.info("Endo questions starter");
         Thread.sleep(Duration.ofSeconds(5));
         if (page.locator("label:nth-child(2) > .checkbox > .form-check-presentation").isVisible()) {
             log.info("various visit questions selection");
@@ -182,9 +182,17 @@ public class LuxmedPage {
         }
     }
 
-    public void partWithYesNoQuestionsForEndo() {
+    public void partWithYesNoQuestions(DoctorType doctorType) {
         try {
-            partWithYesNoQuestionsForEndoLogic();
+            switch (doctorType) {
+                case ENDOKRYNOLOG :
+                    partWithYesNoQuestionsLogicEndokrynolog();
+                    break;
+                case OKULISTA:
+                    //TODO implementation for various optional questions for first visit
+                    break;
+            }
+
         } catch (Exception e) {
             log.severe("Part with yes/no questions has failed");
             browserUtils.makeScreenshot("yes_no_questions_failed_");
@@ -192,20 +200,29 @@ public class LuxmedPage {
         }
     }
 
-    private void chooseDoctorNameAndClinicLogic() {
+    private void chooseDoctorNameAndClinicLogic(String doctorName) {
         //part with doctor name
-        log.info("filtering by a doctor name");
-        final String DOCTOR_NAME = "Ilona Minkiewicz";
-        final String DOCTOR_SHORT_INDICATOR = "ilo";
-        page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wybrano 1 z 5")).click();
-        page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wybrano 1 z 5")).fill(DOCTOR_NAME);
-//            page.getByText(DOCTOR_NAME).first().click();
+        log.info("filtering by a doctor name: " + doctorName);
+        //The first time ever this page is reached the doctor name picker will have "Dowolny lekarz" each time.
+        //If ever the name will be picked - the locator will change into "Wybrano 1 z 5", that is why if else loop is introduced here
+//        page.waitForTimeout(2500);
+        page.waitForLoadState(NETWORKIDLE);
+        if (page.getByText("Wyczyść").isVisible() == true) {
+            log.info("Some doctors are already filled in, going to clear those.");
+            page.getByText("Wyczyść").click();
+        }
+
+        page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).click();
+        page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).fill(doctorName);
+        page.getByRole(AriaRole.LISTITEM).click();
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click(); //clicks to make a dropdown disappear fisrt
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click();
+        //TODO clinic is now - default one
     }
 
-    public void chooseDoctorNameAndClinic() {
+    public void chooseDoctorNameAndClinic(String doctorName) {
         try {
-            chooseDoctorNameAndClinicLogic();
+            chooseDoctorNameAndClinicLogic(doctorName);
         } catch (Exception e) {
             log.severe("Choose doctor anme has failed");
             browserUtils.makeScreenshot("choose_doctor_name_failed_");

@@ -2,9 +2,12 @@ package org.example;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.*;
+import javafx.application.Application;
 import lombok.extern.java.Log;
 import org.example.browser.BrowserProvider;
+import org.example.doctor.DoctorType;
 import org.example.luxmed.LuxmedPage;
+import org.example.ui.ConfigApp;
 
 import java.time.Duration;
 
@@ -16,7 +19,10 @@ public class Luxmed {
     static boolean isRegistrationDone = false;
 
     public static void main(String[] args) {
+        Application.launch(ConfigApp.class, args);
+    }
 
+    public static void startLoop(DoctorType doctorType, String doctorName) {
         //setting up retry mechanism
         int MAX_RETRY_COUNT = getMaxRetryNumber(); //250h of total time run.
         int RETRY_INTERVAL_MINUTES = getRetryIntervalMinutes();
@@ -27,7 +33,7 @@ public class Luxmed {
                 break;
             }
             if (!isRegistrationDone) {
-                endokrinologRegistration();
+                runRegistration(doctorType, doctorName);
             }
             try {
                 Thread.sleep(Duration.ofMinutes(RETRY_INTERVAL_MINUTES));
@@ -39,7 +45,7 @@ public class Luxmed {
     }
 
 
-    public static void endokrinologRegistration() {
+    public static void runRegistration(DoctorType doctorType, String doctorName) {
         try (BrowserProvider browserProvider = new BrowserProvider()) {
             Browser browser = browserProvider.getBrowser();
 
@@ -51,10 +57,10 @@ public class Luxmed {
             luxmedPage.login();
             luxmedPage.emailVerification();
             luxmedPage.optionalAnketaQuestion();
-            luxmedPage.selectingNewVisitEndokrinolog();
+            luxmedPage.selectingNewVisit(doctorType);
             luxmedPage.isThatYourFirstVisitQuestions();
-            luxmedPage.partWithYesNoQuestionsForEndo();
-            luxmedPage.chooseDoctorNameAndClinic();
+            luxmedPage.partWithYesNoQuestions(doctorType);
+            luxmedPage.chooseDoctorNameAndClinic(doctorName);
             isRegistrationDone = luxmedPage.selectAVisitFromTheList();
 
             log.info("closing the browser");

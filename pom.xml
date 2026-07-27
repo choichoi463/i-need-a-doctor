@@ -64,6 +64,14 @@
             <version>6.1.0</version>
         </dependency>
 
+        <!-- doctor type / name pre-configuration UI -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>21.0.4</version>
+            <classifier>win</classifier>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -76,6 +84,14 @@
                 <configuration>
                     <source>19</source>
                     <target>19</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>org.example.ui.ConfigApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>
