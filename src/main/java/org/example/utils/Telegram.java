@@ -17,7 +17,7 @@ public class Telegram {
      */
     public static void sendMessageTelegramBot(String message) {
         // Create your bot passing the token received from @BotFather
-        String token = "set yours auth key!"; // set yours auth key
+        String token = ConfigReader.getTelegramBotToken();
 
         TelegramBot bot = new TelegramBot(token);
 
@@ -29,7 +29,7 @@ public class Telegram {
         });
 
         // Send messages
-        long chatId = 342962942; //set yours chat id
+        long chatId = ConfigReader.getTelegramChatId();
         SendResponse response = bot.execute(new SendMessage(chatId, message));
     }
 

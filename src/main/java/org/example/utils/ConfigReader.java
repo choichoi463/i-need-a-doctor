@@ -58,6 +58,14 @@ public class ConfigReader {
     public static Integer getNoEmailSleepInterval() {
         return Integer.valueOf(props.getProperty("noemail.sleep.interval"));
     }
+    public static String getTelegramBotToken() {
+        return props.getProperty("telegram.bot.token");
+    }
+
+    public static long getTelegramChatId() {
+        return Long.parseLong(props.getProperty("telegram.chat.id"));
+    }
+
     public static boolean getIsBrowserHeadless() {
         boolean isHeadless;
         if (StringUtils.equals(props.getProperty("browser.headless"),"true")) {
