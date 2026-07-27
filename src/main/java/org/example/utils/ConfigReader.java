@@ -3,6 +3,7 @@ package org.example.utils;
 import lombok.extern.java.Log;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.io.FileInputStream;
 import java.util.Properties;
 
@@ -14,8 +15,36 @@ public class ConfigReader {
     static {
         try {
             props.load(new FileInputStream("src\\main\\resources\\config.properties"));
+            decryptEncryptedProperties();
         } catch (Exception e) {
             throw new RuntimeException("Cannot load config.properties, blyat!", e);
+        }
+    }
+
+    /**
+     * Values wrapped as ENC(...) in config.properties are decrypted here using a key
+     * derived from the CONFIG_ENCRYPTION_KEY environment variable, so plaintext secrets
+     * never need to sit in the file itself.
+     */
+    private static void decryptEncryptedProperties() {
+        boolean hasEncryptedValues = props.stringPropertyNames().stream()
+                .anyMatch(name -> ConfigCrypto.isEncrypted(props.getProperty(name)));
+        if (!hasEncryptedValues) {
+            return;
+        }
+
+        String envKey = System.getenv(ConfigCrypto.ENV_VAR_NAME);
+        if (StringUtils.isBlank(envKey)) {
+            throw new RuntimeException("config.properties contains ENC(...) values but the "
+                    + ConfigCrypto.ENV_VAR_NAME + " environment variable is not set.");
+        }
+
+        SecretKeySpec key = ConfigCrypto.deriveKey(envKey);
+        for (String name : props.stringPropertyNames()) {
+            String value = props.getProperty(name);
+            if (ConfigCrypto.isEncrypted(value)) {
+                props.setProperty(name, ConfigCrypto.decrypt(value, key));
+            }
         }
     }
 

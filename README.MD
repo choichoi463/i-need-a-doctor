@@ -20,6 +20,9 @@ app password can be created here https://myaccount.google.com/apppasswords
 
 To receive a message in telegram - you should update the token in Telegram.java
 
+To Encrypt variable:
+mvn exec:java -D exec.mainClass=org.example.ConfigEncryptorMain -D exec.args="your_variable
+
 Logic steps:
 - `10` open url
 - login
