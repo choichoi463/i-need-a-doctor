@@ -9,7 +9,8 @@ package org.example.doctor;
 public enum DoctorType {
 
     ENDOKRYNOLOG("Endokrynolog", "Konsultacja endokrynologiczna", "endo", "endokrynolog.txt"),
-    OKULISTA("Konsultacja okulistyczna z badaniem dna oka", "Konsultacja okulistyczna z badaniem dna oka", "okulistyczna", "okulista.txt");
+    OKULISTA("Konsultacja okulistyczna z badaniem dna oka", "Konsultacja okulistyczna z badaniem dna oka", "okulistyczna", "okulista.txt"),
+    GASTROSKOPIJA_TELEFONICZNA("Konsultacja gastroenterologiczna (gastrologiczna) - telefoniczna", "Konsultacja gastroenterologiczna (gastrologiczna) - telefoniczna", "gastrologiczna", "gastrolog.txt");
 
     private final String displayName;
     private final String visitTypeSearchParam;

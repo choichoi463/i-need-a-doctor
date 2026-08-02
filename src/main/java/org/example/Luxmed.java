@@ -1,7 +1,6 @@
 package org.example;
 
 import com.microsoft.playwright.*;
-import com.microsoft.playwright.options.*;
 import javafx.application.Application;
 import lombok.extern.java.Log;
 import org.example.browser.BrowserProvider;
@@ -22,7 +21,7 @@ public class Luxmed {
         Application.launch(ConfigApp.class, args);
     }
 
-    public static void startLoop(DoctorType doctorType, String doctorName) {
+    public static void startLoop(DoctorType doctorType, String doctorName, boolean isFollowupVisit) {
         //setting up retry mechanism
         int MAX_RETRY_COUNT = getMaxRetryNumber(); //250h of total time run.
         int RETRY_INTERVAL_MINUTES = getRetryIntervalMinutes();
@@ -33,7 +32,7 @@ public class Luxmed {
                 break;
             }
             if (!isRegistrationDone) {
-                runRegistration(doctorType, doctorName);
+                runRegistration(doctorType, doctorName, isFollowupVisit);
             }
             try {
                 Thread.sleep(Duration.ofMinutes(RETRY_INTERVAL_MINUTES));
@@ -45,7 +44,7 @@ public class Luxmed {
     }
 
 
-    public static void runRegistration(DoctorType doctorType, String doctorName) {
+    public static void runRegistration(DoctorType doctorType, String doctorName, boolean isFollowupVisit) {
         try (BrowserProvider browserProvider = new BrowserProvider()) {
             Browser browser = browserProvider.getBrowser();
 
@@ -56,12 +55,12 @@ public class Luxmed {
 
             luxmedPage.login();
             luxmedPage.emailVerification();
-            luxmedPage.optionalAnketaQuestion();
+            luxmedPage.optionalAnketaQuestionPomin();
             luxmedPage.selectingNewVisit(doctorType);
             luxmedPage.isThatYourFirstVisitQuestions();
-            luxmedPage.partWithYesNoQuestions(doctorType);
-            luxmedPage.chooseDoctorNameAndClinic(doctorName);
-            isRegistrationDone = luxmedPage.selectAVisitFromTheList();
+            luxmedPage.partWithYesNoQuestionsAboutVisitType(doctorType, isFollowupVisit);
+            luxmedPage.chooseDoctorNameAndClinic(doctorName, isFollowupVisit);
+            isRegistrationDone = luxmedPage.selectAVisitFromTheList(isFollowupVisit);
 
             log.info("closing the browser");
             context.close();

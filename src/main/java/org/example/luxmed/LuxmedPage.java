@@ -106,7 +106,7 @@ public class LuxmedPage {
     }
 
     @SneakyThrows
-    public void optionalAnketaQuestion() {
+    public void optionalAnketaQuestionPomin() {
         page.waitForLoadState();
         Thread.sleep(5000);
 
@@ -182,15 +182,36 @@ public class LuxmedPage {
         }
     }
 
-    public void partWithYesNoQuestions(DoctorType doctorType) {
+    private void partWithYesNoQuestionsGastrologLogic() throws InterruptedException {
+        log.info("Gastro questions starter - kontrolna");
+        Thread.sleep(Duration.ofSeconds(5));
+        //TODO add questions answers here ater
+    }
+
+    private void followupRegistrationFormAccept() throws InterruptedException {
+        log.info("Followup visit logic.");
+        Thread.sleep(Duration.ofSeconds(5));
+        // form appear only when a skirowanie (referral) exists
+        //TODO click Umów or smthg like that, skip all the questions
+    }
+
+    public void partWithYesNoQuestionsAboutVisitType(DoctorType doctorType, boolean isFollowUp) {
         try {
-            switch (doctorType) {
-                case ENDOKRYNOLOG :
-                    partWithYesNoQuestionsLogicEndokrynolog();
-                    break;
-                case OKULISTA:
-                    //TODO implementation for various optional questions for first visit
-                    break;
+            if (isFollowUp) {
+                followupRegistrationFormAccept();
+            }
+            else {
+                switch (doctorType) {
+                    case ENDOKRYNOLOG :
+                        partWithYesNoQuestionsLogicEndokrynolog();
+                        break;
+                    case OKULISTA:
+                        //TODO implementation for various optional questions for first visit
+                        break;
+                    case GASTROSKOPIJA_TELEFONICZNA:
+                        partWithYesNoQuestionsGastrologLogic();
+                        break;
+                }
             }
 
         } catch (Exception e) {
@@ -200,29 +221,36 @@ public class LuxmedPage {
         }
     }
 
-    private void chooseDoctorNameAndClinicLogic(String doctorName) {
+    private void chooseDoctorNameAndClinicLogic(String doctorName, boolean isFollowupVisit) {
         //part with doctor name
         log.info("filtering by a doctor name: " + doctorName);
-        //The first time ever this page is reached the doctor name picker will have "Dowolny lekarz" each time.
-        //If ever the name will be picked - the locator will change into "Wybrano 1 z 5", that is why if else loop is introduced here
-//        page.waitForTimeout(2500);
-        page.waitForLoadState(NETWORKIDLE);
-        if (page.getByText("Wyczyść").isVisible() == true) {
-            log.info("Some doctors are already filled in, going to clear those.");
-            page.getByText("Wyczyść").click();
+
+        if (isFollowupVisit) {
+            //TODO add logic for searching for any doctor name, and filter those later on search results page.
         }
 
-        page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).click();
-        page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).fill(doctorName);
-        page.getByRole(AriaRole.LISTITEM).click();
-        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click(); //clicks to make a dropdown disappear fisrt
-        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click();
-        //TODO clinic is now - default one
+        if (!isFollowupVisit) {
+            //The first time ever this page is reached the doctor name picker will have "Dowolny lekarz" each time.
+            //If ever the name will be picked - the locator will change into "Wybrano 1 z 5", that is why if else loop is introduced here
+//        page.waitForTimeout(2500);
+            page.waitForLoadState(NETWORKIDLE);
+            if (page.getByText("Wyczyść").isVisible() == true) {
+                log.info("Some doctors are already filled in, going to clear those.");
+                page.getByText("Wyczyść").click();
+            }
+
+            page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).click();
+            page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).fill(doctorName);
+            page.getByRole(AriaRole.LISTITEM).click();
+            page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click(); //clicks to make a dropdown disappear fisrt
+            page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click();
+            //TODO clinic is now - default one
+        }
     }
 
-    public void chooseDoctorNameAndClinic(String doctorName) {
+    public void chooseDoctorNameAndClinic(String doctorName, boolean isFollowupVisit) {
         try {
-            chooseDoctorNameAndClinicLogic(doctorName);
+            chooseDoctorNameAndClinicLogic(doctorName, isFollowupVisit);
         } catch (Exception e) {
             log.severe("Choose doctor anme has failed");
             browserUtils.makeScreenshot("choose_doctor_name_failed_");
@@ -230,7 +258,7 @@ public class LuxmedPage {
         }
     }
 
-    private boolean selectAVisitFromTheListLogic() throws InterruptedException {
+    private boolean selectAVisitFromTheListLogic(boolean isFollowupVisit) throws InterruptedException {
         //list of all found terms
         //if terms have something in the list
         Thread.sleep(Duration.ofSeconds(15)); //TODO may be replace later by some dynamic element, but results are loaded slow, with no elements at all
@@ -263,6 +291,8 @@ public class LuxmedPage {
              * '14 kwi, wtorek14 kwietnia, wtorek (4)Dostępne terminy: 4 od 09:00 do 12:00'
              */
 
+            //TODO somewhere here add a logic to filter a doctor by name from results. isFollowupVisit.
+
             // Collecting all available elements, collecting indexes
             //groups of time blocks per day.
             //page.locator("ul.list-group.ng-star-inserted")
@@ -293,9 +323,9 @@ public class LuxmedPage {
         return isRegistrationDone;
     }
 
-    public boolean selectAVisitFromTheList() {
+    public boolean selectAVisitFromTheList(boolean isFollowupVisit) {
         try {
-            return selectAVisitFromTheListLogic();
+            return selectAVisitFromTheListLogic(isFollowupVisit);
         } catch (Exception e) {
             log.severe("Selecting a visit from found results has failed");
             browserUtils.makeScreenshot("selecting_visit_failed_");

@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -55,11 +56,14 @@ public class ConfigApp extends Application {
             }
         });
 
+        CheckBox followupVisitCheckBox = new CheckBox("followup visit (skirowanie)");
+
         Button startButton = new Button("Start");
         Label statusLabel = new Label();
         startButton.setOnAction(event -> {
             DoctorType selectedType = doctorTypeCombo.getValue();
             String selectedName = doctorNameCombo.getEditor().getText();
+            boolean isFollowupVisit = followupVisitCheckBox.isSelected();
 
             if (selectedType == null || selectedName == null || selectedName.isBlank()) {
                 statusLabel.setText("Please select a doctor type and name.");
@@ -71,7 +75,7 @@ public class ConfigApp extends Application {
 
             // Non-daemon: Application.launch() returns once this stage closes, and the JavaFX
             // platform's implicit exit would otherwise let the JVM terminate before the loop runs.
-            Thread automationThread = new Thread(() -> Luxmed.startLoop(selectedType, selectedName));
+            Thread automationThread = new Thread(() -> Luxmed.startLoop(selectedType, selectedName, isFollowupVisit));
             automationThread.start();
 
             stage.close();
@@ -85,11 +89,12 @@ public class ConfigApp extends Application {
         grid.add(doctorTypeCombo, 1, 0);
         grid.add(doctorNameLabel, 0, 1);
         grid.add(doctorNameCombo, 1, 1);
-        grid.add(startButton, 1, 2);
-        grid.add(statusLabel, 0, 3, 2, 1);
+        grid.add(followupVisitCheckBox, 0, 2, 2, 1);
+        grid.add(startButton, 1, 3);
+        grid.add(statusLabel, 0, 4, 2, 1);
 
         stage.setTitle("Luxmed booking setup");
-        stage.setScene(new Scene(grid, 400, 220));
+        stage.setScene(new Scene(grid, 600, 250));
         stage.show();
     }
 }
