@@ -57,10 +57,10 @@ public class Luxmed {
             luxmedPage.emailVerification();
             luxmedPage.optionalAnketaQuestionPomin();
             luxmedPage.selectingNewVisit(doctorType);
-            luxmedPage.isThatYourFirstVisitQuestions();
+//            luxmedPage.isThatYourFirstVisitQuestions();
             luxmedPage.partWithYesNoQuestionsAboutVisitType(doctorType, isFollowupVisit);
             luxmedPage.chooseDoctorNameAndClinic(doctorName, isFollowupVisit);
-            isRegistrationDone = luxmedPage.selectAVisitFromTheList(isFollowupVisit);
+            isRegistrationDone = luxmedPage.selectAVisitFromTheList(isFollowupVisit, doctorName);
 
             log.info("closing the browser");
             context.close();

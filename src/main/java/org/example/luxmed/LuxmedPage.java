@@ -182,17 +182,24 @@ public class LuxmedPage {
         }
     }
 
-    private void partWithYesNoQuestionsGastrologLogic() throws InterruptedException {
+    private void partWithYesNoQuestionsGastrologTelLogic() throws InterruptedException {
         log.info("Gastro questions starter - kontrolna");
         Thread.sleep(Duration.ofSeconds(5));
-        //TODO add questions answers here ater
+        //TODO add questions answers here after
+    }
+
+    private void partWithYesNoQuestionsGastrologLogic() throws InterruptedException {
+        log.info("Gastro questions  w placowkie questionaire.");
+        Thread.sleep(Duration.ofSeconds(5));
+
+
     }
 
     private void followupRegistrationFormAccept() throws InterruptedException {
         log.info("Followup visit logic.");
         Thread.sleep(Duration.ofSeconds(5));
-        // form appear only when a skirowanie (referral) exists
-        //TODO click Umów or smthg like that, skip all the questions
+        // form appears only when a skirowanie (referral) exists, otherwise there is no popup
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Wybierz wizytę kontrolną")).click();
     }
 
     public void partWithYesNoQuestionsAboutVisitType(DoctorType doctorType, boolean isFollowUp) {
@@ -209,6 +216,9 @@ public class LuxmedPage {
                         //TODO implementation for various optional questions for first visit
                         break;
                     case GASTROSKOPIJA_TELEFONICZNA:
+                        partWithYesNoQuestionsGastrologTelLogic();
+                        break;
+                    case GASTROSKOPIJA:
                         partWithYesNoQuestionsGastrologLogic();
                         break;
                 }
@@ -226,7 +236,9 @@ public class LuxmedPage {
         log.info("filtering by a doctor name: " + doctorName);
 
         if (isFollowupVisit) {
+            log.info("looking for a followup visit, any results first.");
             //TODO add logic for searching for any doctor name, and filter those later on search results page.
+            page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click();
         }
 
         if (!isFollowupVisit) {
@@ -258,7 +270,14 @@ public class LuxmedPage {
         }
     }
 
-    private boolean selectAVisitFromTheListLogic(boolean isFollowupVisit) throws InterruptedException {
+    /**
+     *
+     * @param isFollowupVisit - used when need to apply addition filtering over results page for a followup visit
+     * @param doctorName - filter doctor name for a followup visit
+     * @return boolean of registration done or not to breka the loop
+     * @throws InterruptedException
+     */
+    private boolean selectAVisitFromTheListLogic(boolean isFollowupVisit, String doctorName) throws InterruptedException {
         //list of all found terms
         //if terms have something in the list
         Thread.sleep(Duration.ofSeconds(15)); //TODO may be replace later by some dynamic element, but results are loaded slow, with no elements at all
@@ -266,8 +285,21 @@ public class LuxmedPage {
         log.info("looking through found available results");
         browserUtils.makeScreenshot("LOOKING_RESULTS_");
 
+        if (isFollowupVisit) {
+            //results page, with filtering by specific doctor
+            log.info("Going to apply doctor filter on resutls page for a followup visit");
+            page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).click();
+            page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).fill(doctorName);
+            page.locator("label").nth(1).click();
+//            page.getByText("lek. med. Agnieszka Krawczyń").click();
+
+            Thread.sleep(Duration.ofSeconds(15));
+            log.info("Filtered the results by specific doctor.");
+            browserUtils.makeScreenshot("LOOKING_RESULTS_FILTERED_");
+        }
+
         if (page.locator("css=app-term").count() > 0) {
-            log.info("selecting the available timeslot reservation slot");
+            log.info("selecting the available timeslot reservation slot. Time 12+");
 
             //applying time filter on ui
 //              page.getByText("Dowolna").click();
@@ -290,8 +322,6 @@ public class LuxmedPage {
              * $("div.card-header-content").textContent
              * '14 kwi, wtorek14 kwietnia, wtorek (4)Dostępne terminy: 4 od 09:00 do 12:00'
              */
-
-            //TODO somewhere here add a logic to filter a doctor by name from results. isFollowupVisit.
 
             // Collecting all available elements, collecting indexes
             //groups of time blocks per day.
@@ -323,9 +353,9 @@ public class LuxmedPage {
         return isRegistrationDone;
     }
 
-    public boolean selectAVisitFromTheList(boolean isFollowupVisit) {
+    public boolean selectAVisitFromTheList(boolean isFollowupVisit, String  doctorName) throws InterruptedException {
         try {
-            return selectAVisitFromTheListLogic(isFollowupVisit);
+            return selectAVisitFromTheListLogic(isFollowupVisit, doctorName);
         } catch (Exception e) {
             log.severe("Selecting a visit from found results has failed");
             browserUtils.makeScreenshot("selecting_visit_failed_");

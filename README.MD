@@ -1,6 +1,8 @@
 
 This is a playwright repo with java 21.
 
+First - copy the config_default.properties into config.properties and populate your creds there.
+
 To run behind the proxy use this system variable, which will skip downloading browsers each time:
 ` PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`
 manually can be downloaded from here
