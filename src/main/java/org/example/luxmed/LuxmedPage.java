@@ -291,7 +291,10 @@ public class LuxmedPage {
             page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).click();
             page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).fill(doctorName);
             page.locator("label").nth(1).click();
-//            page.getByText("lek. med. Agnieszka Krawczyń").click();
+            // below is ame as above click.
+            //page.locator("//*[contains(text(),\"" + doctorName + "\")]").click();
+            //click outside the form
+            page.locator("css=.dropdown-icon-opened").click();
 
             Thread.sleep(Duration.ofSeconds(15));
             log.info("Filtered the results by specific doctor.");
