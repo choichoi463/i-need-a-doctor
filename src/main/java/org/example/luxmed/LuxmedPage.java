@@ -260,10 +260,15 @@ public class LuxmedPage {
                 page.getByText("Wyczyść").click();
             }
 
-            page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).click();
-            page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).fill(doctorName);
-            page.getByRole(AriaRole.LISTITEM).click();
-            page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click(); //clicks to make a dropdown disappear fisrt
+            //choosing doctor name from the list
+            log.info("Doctor name: " + doctorName);
+            if (!doctorName.equals("any")) {
+                log.info("Choosing doctor name: " + doctorName);
+                page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).click();
+                page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).fill(doctorName);
+                page.getByRole(AriaRole.LISTITEM).click();
+                page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click(); //clicks to make a dropdown disappear fisrt
+            }
             page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click();
             //TODO clinic is now - default one
         }

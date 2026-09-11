@@ -39,4 +39,3 @@ Logic steps:
 TODO list:
 - time slots selection
 - time slots filtering by text from seach page
-- any doctor name (blank name support on ui, and while selecting a name on ui)
