@@ -15,7 +15,7 @@ public class Telegram {
      *
      * @param message
      */
-    public static void sendMessageTelegramBot(String message) {
+    public static SendResponse sendMessageTelegramBot(String message) {
         // Create your bot passing the token received from @BotFather
         String token = ConfigReader.getTelegramBotToken();
 
@@ -31,6 +31,7 @@ public class Telegram {
         // Send messages
         long chatId = ConfigReader.getTelegramChatId();
         SendResponse response = bot.execute(new SendMessage(chatId, message));
+        return response;
     }
 
     /**
@@ -44,8 +45,8 @@ public class Telegram {
         return formatter.format(date);
     }
 
-    public static void sendMessage(String message) {
-        sendMessageTelegramBot(message + " " + getDateTimeNow());
+    public static SendResponse sendMessage(String message) {
+        return sendMessageTelegramBot(message + " " + getDateTimeNow());
     }
 }
 

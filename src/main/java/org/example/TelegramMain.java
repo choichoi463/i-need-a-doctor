@@ -1,5 +1,6 @@
 package org.example;
 
+import com.pengrad.telegrambot.response.SendResponse;
 import lombok.extern.java.Log;
 import org.example.utils.Telegram;
 
@@ -9,7 +10,13 @@ public class TelegramMain {
 
         Telegram telegram = new Telegram();
         try {
-           telegram.sendMessage("test first message");
+            log.info("sending test message");
+            SendResponse response = telegram.sendMessage("test first message");
+            try {
+                log.info(response.toString());
+            } catch (Exception e) {
+                log.severe("Telegram response failed. " + e.getMessage());
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

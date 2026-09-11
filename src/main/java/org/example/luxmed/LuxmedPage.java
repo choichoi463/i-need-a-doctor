@@ -4,6 +4,7 @@ import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
+import com.pengrad.telegrambot.response.SendResponse;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Store;
@@ -365,7 +366,13 @@ public class LuxmedPage {
             //TODO send message ro something.
             browserUtils.makeScreenshot("RESERVATION_TIME_SUCCESS_");
             Telegram telegram = new Telegram();
-            telegram.sendMessage("Reservation was done successfully, please check your mailbox for a confirmation.");
+            SendResponse response = telegram.sendMessage("Reservation was done successfully, please check your mailbox for a confirmation.");
+            try {
+                log.info(response.toString());
+            } catch (Exception e) {
+                log.severe("Telegram response failed. " + e.getMessage());
+            }
+
         }
         return isRegistrationDone;
     }

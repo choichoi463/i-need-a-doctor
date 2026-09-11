@@ -20,7 +20,9 @@ https://www.baeldung.com/java-access-gmail-imap
 To connect to the Gmail server, we need to create an app password. Let’s navigate to the Google Account settings page and select the security option at the sidebar. Then, let’s enable 2-Factor Authentication (2FA) if not already active.
 app password can be created here https://myaccount.google.com/apppasswords
 
-To receive a message in telegram - you should update the token in Telegram.java
+Telegram:
+To receive a message in telegram - you should update the token and chat id in config.properties.
+Read more about configuration here https://rieckpil.de/howto-send-telegram-bot-notifications-with-java/
 
 To Encrypt variable:
 mvn exec:java -D exec.mainClass=org.example.ConfigEncryptorMain -D exec.args="your_variable
