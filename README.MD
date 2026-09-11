@@ -26,19 +26,17 @@ To Encrypt variable:
 mvn exec:java -D exec.mainClass=org.example.ConfigEncryptorMain -D exec.args="your_variable
 
 Logic steps:
-- `10` open url
-- login
-- condition - if verification form - email verification
-- select a doctor (name, category)
-- find results
-- register for the upcoming date - last slot from page 1.
-- send telegram message
-- end loop
+- ui with doctor type -> with doctor name
+- ui followup visit boolean (extra step to choose followup while registering and skips doctor names completely (cleared on search result page))
+- opens url luxmed portal , login , verification by email code
+- Umow -> select a doctor type and name.
+- Extra questions for visit type (depends on the doctor type)
+- Hardcoded step to apply time filter 12:00-17:00, 17:00++
+- Finds results -> Chooses tha last result found (usually 2-3 days, or 20-30 visits rows)-> loop ends -> telegram notification sent
+  - For a followup visit clears the names from the list as well. 
+  - No results -> loop restart after 5 minutes
 
-Conditions for steps above:
-- condition - if fails ui element - goto 10.
-- add max wait time for playwright *TODO*
-- condition - if session ends (same as ui fails) - goto 10.
-- condition - if email is not received for very long - sleep 15 minutes. goto 10.
-
-- observer patter for these events. (TODO may be, only if not restartign the app each time, but to react with some events instead.)
+TODO list:
+- time slots selection
+- time slots filtering by text from seach page
+- any doctor name (blank name support on ui, and while selecting a name on ui)
