@@ -11,7 +11,8 @@ public enum DoctorType {
     ENDOKRYNOLOG("Endokrynolog", "Konsultacja endokrynologiczna", "endo", "endokrynolog.txt"),
     OKULISTA("Konsultacja okulistyczna z badaniem dna oka", "Konsultacja okulistyczna z badaniem dna oka", "okulistyczna", "okulista.txt"),
     GASTROSKOPIJA_TELEFONICZNA("Konsultacja gastroenterologiczna (gastrologiczna) - telefoniczna", "Konsultacja gastroenterologiczna (gastrologiczna) - telefoniczna", "gastrologiczna", "gastrolog-telefon.txt"),
-    GASTROSKOPIJA("Konsultacja gastroenterologiczna (gastrologiczna)", "Konsultacja gastroenterologiczna (gastrologiczna)", "gastrologiczna", "gastrolog.txt");
+    GASTROSKOPIJA("Konsultacja gastroenterologiczna (gastrologiczna)", "Konsultacja gastroenterologiczna (gastrologiczna)", "gastrologiczna", "gastrolog.txt"),
+    PSYCHIATR_PIERWSZORAZOWA("Konsultacja psychiatryczna (wizyta pierwszorazowa)", "Konsultacja psychiatryczna (wizyta pierwszorazowa)", "psychiatryczna pierszorazowa", "psychiatr_pierwotna.txt");
 
     private final String displayName;
     private final String visitTypeSearchParam;

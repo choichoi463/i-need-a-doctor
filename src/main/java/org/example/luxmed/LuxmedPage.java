@@ -195,6 +195,12 @@ public class LuxmedPage {
 
     }
 
+    private void partWithYesNoQuestionsPsychiatrFirstVisitLogic() throws InterruptedException {
+        log.info("Psychiatr questions  w placowkie questionaire.");
+        Thread.sleep(Duration.ofSeconds(5));
+        //There is no additional questions for this user type visit registration.
+    }
+
     private void followupRegistrationFormAccept() throws InterruptedException {
         log.info("Followup visit logic.");
         Thread.sleep(Duration.ofSeconds(5));
@@ -220,6 +226,9 @@ public class LuxmedPage {
                         break;
                     case GASTROSKOPIJA:
                         partWithYesNoQuestionsGastrologLogic();
+                        break;
+                    case PSYCHIATR_PIERWSZORAZOWA:
+                        partWithYesNoQuestionsPsychiatrFirstVisitLogic();
                         break;
                 }
             }
