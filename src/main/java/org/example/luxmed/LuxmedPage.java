@@ -299,12 +299,23 @@ public class LuxmedPage {
             }
 
             //Clinic selection
-            // if obj.hasClinic then do
-            if (false) {
+            // TODO set clinic option from ui values
+            String clinic = "";
+            if (!clinic.isEmpty()) {
                 page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolna placówka")).click();
-                page.getByRole(AriaRole.LISTITEM).filter(new Locator.FilterOptions().setHasText("Gdańsk - al. Grunwaldzka")).click();
-                //deselect dropdown upwards
-                page.locator("#facilities > .position-relative > .dropdown-chevron-click-area").click();
+                switch (clinic) {
+                    case "Grunwaldzka":
+                        page.getByRole(AriaRole.LISTITEM).filter(new Locator.FilterOptions().setHasText("Gdańsk - al. Grunwaldzka")).click();
+                    case "Zwycięstwa":
+                        page.getByRole(AriaRole.LISTITEM).filter(new Locator.FilterOptions().setHasText("Gdańsk - al. Zwycięstwa")).click();
+                    case "Jaśkowa Dolina":
+                        page.getByRole(AriaRole.LISTITEM).filter(new Locator.FilterOptions().setHasText("Gdańsk - ul. Jaśkowa Dolina")).click();
+                    case "Morska":
+                        page.getByRole(AriaRole.LISTITEM).filter(new Locator.FilterOptions().setHasText("Gdynia - ul. Morska")).click();
+
+                    //deselect dropdown upwards
+                    page.locator("#facilities > .position-relative > .dropdown-chevron-click-area").click();
+                }
             }
 
             page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click();
