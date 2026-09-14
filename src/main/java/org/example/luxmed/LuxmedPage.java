@@ -295,7 +295,8 @@ public class LuxmedPage {
                 page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).click();
                 page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).fill(doctorName);
                 page.getByRole(AriaRole.LISTITEM).click();
-                page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click(); //clicks to make a dropdown disappear first
+                //close the dropdown form
+                page.locator(".dropdown-chevron-click-area").first().click();
             }
 
             //Clinic selection
