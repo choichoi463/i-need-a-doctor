@@ -207,6 +207,28 @@ public class LuxmedPage {
         }
     }
 
+    private void partWithYesNoQuestionsLogicOkulist()  throws InterruptedException {
+        log.info("Okulist questions  w placowkie questionaire.");
+        Thread.sleep(Duration.ofSeconds(5));
+
+//        if (page.locator("label").filter(new Locator.FilterOptions().setHasText("Odnowienie recepty")).isVisible()) {
+//            log.info("various visit questions selection");
+//            page.locator("label").filter(new Locator.FilterOptions().setHasText("Odnowienie recepty")).click();
+//            page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Dalej")).click();
+//        }
+
+        if (page.locator("label").filter(new Locator.FilterOptions().setHasText("Dobór okularów lub soczewek")).isVisible()) {
+            page.locator("label").filter(new Locator.FilterOptions().setHasText("Dobór okularów lub soczewek")).click();
+            page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Dalej")).click();
+
+            page.locator("label").filter(new Locator.FilterOptions().setHasText("Okulary")).click();
+            page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Dalej")).click();
+
+            page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Konsultacja optometrysty -")).click();
+            //Optometrysta (dobór szkieł okularowych)
+        }
+    };
+
     private void followupRegistrationFormAccept() throws InterruptedException {
         log.info("Followup visit logic.");
         Thread.sleep(Duration.ofSeconds(5));
@@ -225,7 +247,7 @@ public class LuxmedPage {
                         partWithYesNoQuestionsLogicEndokrynolog();
                         break;
                     case OKULISTA:
-                        //TODO implementation for various optional questions for first visit
+                        partWithYesNoQuestionsLogicOkulist();
                         break;
                     case GASTROSKOPIJA_TELEFONICZNA:
                         partWithYesNoQuestionsGastrologTelLogic();
@@ -273,10 +295,19 @@ public class LuxmedPage {
                 page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).click();
                 page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolny lekarz")).fill(doctorName);
                 page.getByRole(AriaRole.LISTITEM).click();
-                page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click(); //clicks to make a dropdown disappear fisrt
+                page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click(); //clicks to make a dropdown disappear first
             }
+
+            //Clinic selection
+            // if obj.hasClinic then do
+            if (false) {
+                page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Dowolna placówka")).click();
+                page.getByRole(AriaRole.LISTITEM).filter(new Locator.FilterOptions().setHasText("Gdańsk - al. Grunwaldzka")).click();
+                //deselect dropdown upwards
+                page.locator("#facilities > .position-relative > .dropdown-chevron-click-area").click();
+            }
+
             page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Szukaj")).click();
-            //TODO clinic is now - default one
         }
     }
 
