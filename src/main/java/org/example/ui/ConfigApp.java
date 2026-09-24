@@ -12,7 +12,8 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import lombok.extern.java.Log;
 import org.example.Luxmed;
-import org.example.doctor.DoctorType;
+import org.example.model.doctor.DoctorType;
+import org.example.model.doctor.VisitDto;
 import org.example.utils.DoctorNameReader;
 
 import java.util.List;
@@ -75,7 +76,8 @@ public class ConfigApp extends Application {
 
             // Non-daemon: Application.launch() returns once this stage closes, and the JavaFX
             // platform's implicit exit would otherwise let the JVM terminate before the loop runs.
-            Thread automationThread = new Thread(() -> Luxmed.startLoop(selectedType, selectedName, isFollowupVisit));
+            VisitDto visitData = VisitDto.builder().doctorName(selectedName).doctorType(selectedType).isFollowupVisit(isFollowupVisit).build();
+            Thread automationThread = new Thread(() -> Luxmed.startLoop(visitData));
             automationThread.start();
 
             stage.close();

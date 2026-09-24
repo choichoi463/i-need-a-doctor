@@ -10,10 +10,12 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.Store;
 import lombok.SneakyThrows;
 import org.example.browser.BrowserUtils;
-import org.example.doctor.DoctorType;
+import org.example.model.doctor.DoctorType;
 import org.example.utils.ConfigReader;
 import lombok.extern.java.Log;
 import org.example.utils.MailReader;
+import org.example.utils.listener.Display;
+import org.example.utils.listener.Sensor;
 import org.example.utils.Telegram;
 
 import java.time.Duration;
@@ -27,23 +29,41 @@ public class LuxmedPage {
 
     private Page page;
     private BrowserUtils browserUtils;
+    Sensor sensor = new Sensor();
+    Display display = new Display(sensor);
 
     public LuxmedPage(Page page) {
         this.page = page;
         this.browserUtils = new BrowserUtils(page);
     }
 
-    public void login() {
+    /**
+     * performs login, and checks if session is alive or not to skip some steps for login
+     * @param sensor - listener for the session aliveness status
+     */
+    public void login(Sensor sensor) {
         try {
             //login part
             log.info("login part");
-            page.navigate("https://portalpacjenta.luxmed.pl/PatientPortal/NewPortal/Page/Account/Login?returnUrl=%2FPage%2FDashboard");
-            page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wpisz login")).click();
-            page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wpisz login")).fill(ConfigReader.getLuxmedUsername());
-            page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wpisz login")).press("Tab");
-            page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wpisz hasło")).fill(ConfigReader.getLuxmedPassword());
-            page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Zaloguj się")).click();
+//            page.navigate("https://portalpacjenta.luxmed.pl/PatientPortal/NewPortal/Page/Account/Login?returnUrl=%2FPage%2FDashboard");
+            page.navigate("https://portalpacjenta.luxmed.pl/PatientPortal/NewPortal/Page/Dashboard");
 
+            Thread.sleep(2000);
+
+            if (page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wpisz login")).isVisible())
+            {
+                log.info("Wpisz login is visible, trying to log in");
+                sensor.setValue(false);
+                page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wpisz login")).click();
+                page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wpisz login")).fill(ConfigReader.getLuxmedUsername());
+                page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wpisz login")).press("Tab");
+                page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Wpisz hasło")).fill(ConfigReader.getLuxmedPassword());
+                page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Zaloguj się")).click();
+            }
+            else {
+                log.info("session is alive, we are not at login page");
+                sensor.setValue(true);
+            }
         } catch (Exception e) {
             log.severe("Login failed.");
             browserUtils.makeScreenshot("login_failed_");
@@ -51,9 +71,16 @@ public class LuxmedPage {
         }
     }
 
-    public void emailVerification() {
+    /**
+     * Performs email verification for the login.
+     * @param isSessionAlive - boolean from a login part listener. If the session is still alive - email part will be skipped
+     */
+    public void emailVerification(Sensor isSessionAlive) {
         try {
-            emailVerifiationLogic();
+            //check for session is not alive
+            if (!isSessionAlive.getValue()) {
+                emailVerifiationLogic();
+            }
         } catch (Exception e) {
             log.severe("Email verification part failed.");
             browserUtils.makeScreenshot("email_verification_failed_");

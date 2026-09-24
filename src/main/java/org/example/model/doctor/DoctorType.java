@@ -1,4 +1,4 @@
-package org.example.doctor;
+package org.example.model.doctor;
 
 /**
  * Each doctor type maps to a Luxmed visit-type search string (matched via

@@ -1,6 +1,6 @@
 package org.example.utils;
 
-import org.example.doctor.DoctorType;
+import org.example.model.doctor.DoctorType;
 
 import java.io.IOException;
 import java.nio.file.Files;
